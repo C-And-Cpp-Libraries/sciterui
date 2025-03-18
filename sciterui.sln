@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34018.315
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sciterui", "src\sciterui\sciterui.vcxproj", "{847B64EE-2C78-48F9-912B-D700F2A5CB91}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{847B64EE-2C78-48F9-912B-D700F2A5CB91}.Debug|x64.ActiveCfg = Debug|x64
+		{847B64EE-2C78-48F9-912B-D700F2A5CB91}.Debug|x64.Build.0 = Debug|x64
+		{847B64EE-2C78-48F9-912B-D700F2A5CB91}.Release|x64.ActiveCfg = Release|x64
+		{847B64EE-2C78-48F9-912B-D700F2A5CB91}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D8D8B133-4C3D-4DA2-8535-893D482E95F9}
+	EndGlobalSection
+EndGlobal
