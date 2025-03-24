@@ -1,8 +1,10 @@
 #include "sciter_window.h"
+#include "event_handler.h"
 #include "sciter.h"
 #include "std_string.h"
 #include <sciter-x-api.h>
 #include <sciter-x-def.h>
+#include <sciter_handler.h>
 #include <stdint.h>
 
 #undef HWINDOW
@@ -120,6 +122,43 @@ void SciterWindow::SetDestroyed(void)
         return;
     }
     m_destroyed = true;
+    for (EventSinks::iterator itr = m_eventSinks.begin(); itr != m_eventSinks.end(); itr++)
+    {
+        EventHandler * handler = itr->Sink.get();
+        if (IID_ICLICKSINK == itr->riid)
+        {
+            SciterDetachEventHandler((HELEMENT)itr->Element, (::LPELEMENT_EVENT_PROC)&EventHandler::ClickHandler, handler);
+        }
+    }
+    m_eventSinks.clear();
+}
+
+bool SciterWindow::AttachHandler(SCITER_ELEMENT element, const char * riid, void * interfacePtr)
+{
+    if (m_destroyed)
+    {
+        return false;
+    }
+
+    LPELEMENT_EVENT_PROC eventProc = nullptr;
+    UINT subscription = 0;
+    GetEventProc(riid, eventProc, subscription);
+
+    if (eventProc == nullptr || subscription == 0)
+    {
+        return false;
+    }
+    std::unique_ptr<EventHandler> eventHandler(new EventHandler(m_sciter, element, interfacePtr, subscription));
+    if (eventHandler.get())
+    {
+        SCDOM_RESULT hr = SciterAttachEventHandler((HELEMENT)element, (::LPELEMENT_EVENT_PROC)eventProc, eventHandler.get());
+        if (SUCCEEDED(hr))
+        {
+            m_eventSinks.push_back(RegisteredSink(element, riid, interfacePtr, std::move(eventHandler)));
+            return true;
+        }
+    }
+    return false;
 }
 
 void SciterWindow::Bind()
@@ -138,6 +177,21 @@ bool SciterWindow::LoadHtml(const char * url)
     return FALSE != ::SciterLoadFile((HWND)m_hWnd, loadUrl.c_str());
 }
 
+bool SciterWindow::GetEventProc(const char * riid, LPELEMENT_EVENT_PROC & eventProc, uint32_t & subscription)
+{
+    if (strcmp(IID_ICLICKSINK, riid) == 0)
+    {
+        eventProc = &EventHandler::ClickHandler;
+        subscription = HANDLE_MOUSE | HANDLE_BEHAVIOR_EVENT;
+    }
+    else
+    {
+        eventProc = nullptr;
+        subscription = 0;
+        return false;
+    }
+    return true;
+}
 
 LRESULT SciterWindow::HandleNotification(LPSCITER_CALLBACK_NOTIFICATION pnm)
 {
@@ -145,6 +199,8 @@ LRESULT SciterWindow::HandleNotification(LPSCITER_CALLBACK_NOTIFICATION pnm)
     {
     case SC_LOAD_DATA:
         return OnLoadData((LPSCN_LOAD_DATA)pnm);
+    case SC_ATTACH_BEHAVIOR:
+        return OnAttachBehavior((LPSCN_ATTACH_BEHAVIOR)pnm);
     case SC_ENGINE_DESTROYED:
         return OnEngineDestroyed();
     }
@@ -167,6 +223,11 @@ LRESULT SciterWindow::OnLoadData(LPSCN_LOAD_DATA pnmld)
     }
     ::SciterDataReady((HWND)pnmld->hwnd, pnmld->uri, data.get(), dataSize);
     return LOAD_OK;
+}
+
+LRESULT SciterWindow::OnAttachBehavior(LPSCN_ATTACH_BEHAVIOR pnmld)
+{
+    return m_sciter.AttachWidget((Sciter::LPSCN_ATTACH_BEHAVIOR)pnmld);
 }
 
 LRESULT SciterWindow::OnEngineDestroyed(void)

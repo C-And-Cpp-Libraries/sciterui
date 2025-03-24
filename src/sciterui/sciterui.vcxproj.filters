@@ -16,6 +16,9 @@
     <Filter Include="include">
       <UniqueIdentifier>{db3058bf-ec07-46e7-ad65-81a6ca0c8020}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\widgets">
+      <UniqueIdentifier>{4bfd750b-7f2c-403a-bf5c-6a361bf6aba5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sciter_ui.cpp">
@@ -49,6 +52,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sciter_value_internal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\menubar.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="event_handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="base_element.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -87,6 +99,12 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="sciter_value_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="event_handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="base_element.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

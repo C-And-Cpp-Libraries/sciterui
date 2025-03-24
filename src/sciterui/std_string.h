@@ -37,4 +37,4 @@ public:
     stdstr_f(const char * strFormat, ...);
 };
 
-}
+} // namespace SciterUI

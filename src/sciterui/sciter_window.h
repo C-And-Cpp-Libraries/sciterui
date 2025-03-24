@@ -1,6 +1,10 @@
 #pragma once
+#include "event_handler.h"
+#include <memory>
 #include <sciter_ui.h>
 #include <set>
+#include <string>
+#include <vector>
 
 namespace SciterUI
 {
@@ -38,6 +42,26 @@ class SciterWindow :
     } SCN_LOAD_DATA;
 
     typedef SCN_LOAD_DATA * LPSCN_LOAD_DATA;
+    typedef int SC_CALLBACK ElementEventProc(void * tag, SCITER_ELEMENT he, uint32_t evtg, void * prms);
+
+    /**This structure is used by #SC_ATTACH_BEHAVIOR notification.
+     *\copydoc SC_ATTACH_BEHAVIOR **/
+    typedef struct SCN_ATTACH_BEHAVIOR
+    {
+        uint32_t code; /**< [in] one of the codes above.*/
+        HWINDOW hwnd;  /**< [in] HWINDOW of the window this callback was attached to.*/
+
+        SCITER_ELEMENT element;    /**< [in] target DOM element handle*/
+        const char * behaviorName; /**< [in] zero terminated string, string appears as value of CSS behavior:"???" attribute.*/
+
+        ElementEventProc * elementProc; /**< [out] pointer to ElementEventProc function.*/
+        void * elementTag;              /**< [out] tag value, passed as is into pointer ElementEventProc function.*/
+
+    } SCN_ATTACH_BEHAVIOR;
+    typedef SCN_ATTACH_BEHAVIOR * LPSCN_ATTACH_BEHAVIOR;
+
+    typedef ElementEventProc * LPELEMENT_EVENT_PROC;
+
     typedef std::set<IWindowDestroySink *> WinDestroySinks;
 
 public:
@@ -47,6 +71,7 @@ public:
     bool Create(HWINDOW parentWinow, const char * htmlFile, int x, int y, int width, int height);
     bool GetDestroyed(void) const;
     void SetDestroyed(void);
+    bool AttachHandler(SCITER_ELEMENT element, const char * riid, void * interfacePtr);
 
     //ISciterWindow
     void CenterWindow(void);
@@ -60,16 +85,39 @@ private:
     SciterWindow(const SciterWindow &) = delete;
     SciterWindow & operator=(const SciterWindow &) = delete;
 
+    struct RegisteredSink
+    {
+        RegisteredSink(SCITER_ELEMENT Element_, const char * riid_, void * Interface_, std::unique_ptr<EventHandler> Sink_) :
+            Element(Element_),
+            Interface(Interface_),
+            Sink(std::move(Sink_)),
+            riid(riid_)
+        {
+        }
+        bool operator==(const RegisteredSink & lSink)
+        {
+            return (Element == lSink.Element) && (Interface == lSink.Interface) && riid == lSink.riid;
+        }
+        SCITER_ELEMENT Element;
+        void * Interface;
+        std::unique_ptr<EventHandler> Sink;
+        std::string riid;
+    };
+    typedef std::vector<RegisteredSink> EventSinks;
+
     void Bind();
     bool LoadHtml(const char * url);
+    bool GetEventProc(const char * riid, LPELEMENT_EVENT_PROC & eventProc, uint32_t & subscription);
     int64_t HandleNotification(LPSCITER_CALLBACK_NOTIFICATION pnm);
     int64_t OnLoadData(LPSCN_LOAD_DATA pnmld);
+    int64_t OnAttachBehavior(LPSCN_ATTACH_BEHAVIOR pnmld);
     int64_t OnEngineDestroyed(void);
 
     static uint32_t SC_CALLBACK SciterCallback(LPSCITER_CALLBACK_NOTIFICATION pnm, void * param);
 
     Sciter & m_sciter;
     HWINDOW m_hWnd;
+    EventSinks m_eventSinks;
     WinDestroySinks m_onDestroySink;
     bool m_bound;
     bool m_destroyed;

@@ -4,7 +4,7 @@
 
 namespace SciterUI
 {
-    
+
 stdstr::stdstr()
 {
 }
@@ -151,4 +151,4 @@ stdstr_f::stdstr_f(const char * strFormat, ...)
     va_end(args);
 }
 
-}
+} // namespace SciterUI

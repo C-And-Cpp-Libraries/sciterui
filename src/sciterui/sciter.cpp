@@ -1,5 +1,7 @@
 #include "sciter.h"
+#include "sciter_element.h"
 #include "sciter_window.h"
+#include "std_string.h"
 
 #include "sciter-x-api.h"
 
@@ -9,7 +11,8 @@ namespace SciterUI
 {
 
 Sciter::Sciter(const char * languageDir) :
-    m_resourceManager(languageDir)
+    m_resourceManager(languageDir),
+    m_nextWidgetId(1)
 {
 }
 
@@ -21,6 +24,45 @@ bool Sciter::Initialize(const char * baseLanguage, const char * currentLanguage,
     }
     SciterExec(SCITER_APP_INIT, (UINT_PTR)0, (UINT_PTR) nullptr);
     return true;
+}
+
+bool Sciter::AttachHandler(SCITER_ELEMENT elemHandle, const char * riid, void * pinterface)
+{
+    if (elemHandle == nullptr || riid == nullptr || pinterface == nullptr)
+    {
+        return false;
+    }
+    HWINDOW hWnd = SciterElement(elemHandle).GetElementHwnd(true);
+    for (WindowSet::const_iterator itr = m_windows.begin(); itr != m_windows.end(); itr++)
+    {
+        SciterWindow * window = *itr;
+        if (window->GetHandle() != hWnd)
+        {
+            continue;
+        }
+        return window->AttachHandler(elemHandle, riid, pinterface);
+    }
+    return false;
+}
+
+bool Sciter::GetElementInterface(SCITER_ELEMENT he, const char * riid, void ** pinterface)
+{
+    if (he == nullptr)
+    {
+        return false;
+    }
+    std::string widgetValue = SciterElement(he).GetAttribute("data-widget");
+    if (widgetValue.size() == 0)
+    {
+        return false;
+    }
+    int windgetId = std::stoi(widgetValue, nullptr, 10);
+    ElementMap::iterator itr = m_elementBases.find(windgetId);
+    if (itr != m_elementBases.end())
+    {
+        return itr->second->GetInterface(riid, pinterface);
+    }
+    return false;
 }
 
 void Sciter::WindowCreated(SciterWindow * window)
@@ -53,6 +95,55 @@ bool Sciter::WindowCreate(HWINDOW parent, const char * baseHtml, int x, int y, i
     return true;
 }
 
+bool Sciter::RegisterWidgetType(const char * name, tyCreateWidget createWidget, const char * widgetCss)
+{
+    if (name == nullptr || createWidget == nullptr)
+    {
+        return false;
+    }
+    WidgetMap::iterator iter = m_widgetFactory.find(name);
+    if (iter != m_widgetFactory.end())
+    {
+        return false;
+    }
+    WidgetCallbackInfo widgetCallbackInfo;
+    widgetCallbackInfo.sciter = this;
+    widgetCallbackInfo.callback = createWidget;
+    m_widgetFactory.insert(WidgetMap::value_type(name, widgetCallbackInfo));
+    if (widgetCss != nullptr && strlen(widgetCss) > 0)
+    {
+        if (!SciterAppendMasterCSS((LPCBYTE)widgetCss, (uint32_t)strlen(widgetCss)))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+uint32_t Sciter::AttachWidget(LPSCN_ATTACH_BEHAVIOR lpab)
+{
+    if (lpab == nullptr)
+    {
+        return 0;
+    }
+    WidgetMap::iterator itr = m_widgetFactory.find(lpab->behaviorName);
+    if (itr == m_widgetFactory.end())
+    {
+        return 0;
+    }
+    IWidget * pWidget = (itr->second.callback)(*this);
+    if (pWidget == nullptr)
+    {
+        return 0;
+    }
+    uint32_t widgetID = m_nextWidgetId++;
+    SciterElement(lpab->element).SetAttribute("data-widget", stdstr_f("%d", widgetID).c_str());
+    itr->second.widgets.insert(IWidgetMap::value_type(widgetID, pWidget));
+    lpab->elementTag = (void *)&itr->second;
+    lpab->elementProc = (ElementEventProc *)stAttachWidgetProc;
+    return 1;
+}
+
 void Sciter::Run()
 {
     SciterExec(SCITER_APP_LOOP, 0, 0);
@@ -71,6 +162,67 @@ void Sciter::Shutdown()
 ResourceManager & Sciter::GetResourceManager(void)
 {
     return m_resourceManager;
+}
+
+int Sciter::AttachWidgetProc(WidgetCallbackInfo * info, SCITER_ELEMENT he, uint32_t evtg, void * prms)
+{
+    if (info == nullptr)
+    {
+        return 0;
+    }
+
+    if (evtg == HANDLE_INITIALIZATION)
+    {
+        INITIALIZATION_PARAMS * p = (INITIALIZATION_PARAMS *)prms;
+        if (p->cmd == BEHAVIOR_ATTACH)
+        {
+            std::string widgetValue = SciterElement(he).GetAttribute("data-widget");
+            if (widgetValue.size() == 0)
+            {
+                return 0;
+            }
+            int windgetId = std::stoi(widgetValue, nullptr, 10);
+            IWidgetMap::const_iterator IWidgetIter = info->widgets.find(windgetId);
+            if (IWidgetIter == info->widgets.end())
+            {
+                return 0;
+            }
+
+            std::shared_ptr<BaseElement> elementBase;
+            ElementMap::iterator BaseIter = m_elementBases.find(windgetId);
+            if (BaseIter != m_elementBases.end())
+            {
+                elementBase = BaseIter->second;
+            }
+            else
+            {
+                std::pair<ElementMap::iterator, bool> ret = m_elementBases.emplace(ElementMap::value_type(windgetId, std::make_shared<BaseElement>(*this, he)));
+                elementBase = ret.first->second;
+            }
+
+            if (elementBase != nullptr)
+            {
+                IWidget * widget = IWidgetIter->second;
+                elementBase->AddWidget(widget);
+                widget->Attached(he, elementBase.get());
+            }
+        }
+        else
+        {
+            __debugbreak();
+        }
+    }
+    return 0;
+}
+
+int Sciter::stAttachWidgetProc(void * tag, SCITER_ELEMENT he, uint32_t evtg, void * prms)
+{
+    WidgetCallbackInfo * info = (WidgetCallbackInfo *)tag;
+    if (info != nullptr)
+    {
+        return info->sciter->AttachWidgetProc(info, he, evtg, prms);
+    }
+    return false;
 }
 
 } // namespace SciterUI

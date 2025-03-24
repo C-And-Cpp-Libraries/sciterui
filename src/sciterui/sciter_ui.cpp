@@ -1,6 +1,6 @@
 #include "sciter.h"
-#include <sciter_ui.h>
 #include <memory>
+#include <sciter_ui.h>
 
 std::unique_ptr<SciterUI::Sciter> g_sciter;
 

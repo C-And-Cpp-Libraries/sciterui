@@ -100,10 +100,76 @@ SciterElement SciterElement::FindFirst(const char * selector, ...) const
     va_start(args, selector);
     buffer.ArgFormat(selector, args);
     va_end(args);
-        
+
     FindFirstCallback FindFirst;
     SciterSelectElements((HELEMENT)m_he, buffer.c_str(), callback_func, &FindFirst);
     return FindFirst.hfound;
+}
+
+std::string SciterElement::GetAttribute(const char * name) const
+{
+    sciter::string s;
+    SCDOM_RESULT r = SciterGetAttributeByNameCB((HELEMENT)m_he, name, &_LPCWSTR2STRING, &s);
+    if (r == SCDOM_OK_NOT_HANDLED)
+    {
+        return "";
+    }
+    return SciterUI::stdstr().FromUTF16(s.c_str());
+}
+
+void SciterElement::SetAttribute(const char * name, const char * value) const
+{
+    SciterSetAttributeByName((HELEMENT)m_he, name, SciterUI::stdstr(value).ToUTF16().c_str());
+}
+
+HWINDOW SciterElement::GetElementHwnd(bool RootWindow)
+{
+    HWINDOW hwnd = 0;
+    SCDOM_RESULT r = SciterGetElementHwnd((HELEMENT)m_he, (HWND *)&hwnd, RootWindow);
+    assert(r == SCDOM_OK);
+    (void)r;
+    return hwnd;
+}
+
+SciterElement SciterElement::GetElementByID(const char * id) const
+{
+    if (id == nullptr)
+    {
+        return SciterElement();
+    }
+    return FindFirst("[id='%s']", id);
+}
+
+SciterElement SciterElement::GetParent() const
+{
+    HELEMENT hParent = 0;
+    SciterGetParentElement((HELEMENT)m_he, &hParent);
+    return SciterElement(hParent);
+}
+
+void SciterElement::HidePopup() const
+{
+    UINT State = 0;
+    SCDOM_RESULT r = SciterGetElementState((HELEMENT)m_he, &State);
+    if (r == SCDOM_OK && ((State & STATE_POPUP) == STATE_POPUP))
+    {
+        SciterHidePopup((HELEMENT)m_he);
+    }
+}
+
+bool SciterElement::ReleaseCapture(void) const
+{
+    return SciterReleaseCapture((HELEMENT)m_he) == SCDOM_OK;
+}
+
+void SciterElement::SelectElements(ISciterElementCallback * pcall, const char * selectors) const
+{
+    SciterSelectElements((HELEMENT)m_he, selectors, callback_func, pcall);
+}
+
+bool SciterElement::SetCapture(void) const
+{
+    return SciterSetCapture((HELEMENT)m_he) == SCDOM_OK;
 }
 
 void SciterElement::SetHTML(const uint8_t * html, size_t htmlLength, int where) const
@@ -120,6 +186,20 @@ void SciterElement::SetHTML(const uint8_t * html, size_t htmlLength, int where) 
         assert(r == SCDOM_OK);
         (void)r;
     }
+}
+
+SciterElement::RECT SciterElement::GetLocation(uint32_t Area) const
+{
+    SciterElement::RECT rc = {0, 0, 0, 0};
+    SciterGetElementLocation((HELEMENT)m_he, (::RECT *)&rc, Area);
+    return rc;
+}
+
+void SciterElement::SetState(uint32_t BitsToSet, uint32_t BitsToClear, bool Update) const
+{
+    SCDOM_RESULT r = SciterSetElementState((HELEMENT)m_he, BitsToSet, BitsToClear, SBOOL(Update));
+    assert(r == SCDOM_OK);
+    (void)r;
 }
 
 SciterValue SciterElement::Eval(const char * script)
