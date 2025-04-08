@@ -62,9 +62,11 @@ public:
     // ISciterUI
     bool AttachHandler(SCITER_ELEMENT elemHandle, const char * riid, void * pinterface);
     bool GetElementInterface(SCITER_ELEMENT he, const char * riid, void ** pinterface);
+    bool SetElementHtmlFromResource(SCITER_ELEMENT elemHandle, const char * uri);
     bool WindowCreate(HWINDOW parent, const char * baseHtml, int x, int y, int width, int height, ISciterWindow *& window);
     bool RegisterWidgetType(const char * name, tyCreateWidget createWidget, const char * widgetCss);
     uint32_t AttachWidget(LPSCN_ATTACH_BEHAVIOR lpab);
+    void UpdateWindow(HWINDOW hwnd);
     void Run();
     void Stop();
     void Shutdown();

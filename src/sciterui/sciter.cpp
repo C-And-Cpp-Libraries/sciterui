@@ -26,6 +26,11 @@ bool Sciter::Initialize(const char * baseLanguage, const char * currentLanguage,
     return true;
 }
 
+void Sciter::UpdateWindow(HWINDOW hwnd)
+{
+    SciterUpdateWindow((HWND)hwnd);
+}
+
 bool Sciter::AttachHandler(SCITER_ELEMENT elemHandle, const char * riid, void * pinterface)
 {
     if (elemHandle == nullptr || riid == nullptr || pinterface == nullptr)
@@ -81,6 +86,24 @@ void Sciter::WindowDestroyed(SciterWindow * window)
         }
         m_windows.erase(itr);
     }
+}
+
+bool Sciter::SetElementHtmlFromResource(SCITER_ELEMENT elemHandle, const char * uri)
+{
+    SciterElement element(elemHandle);
+    if (!element.IsValid() || uri == nullptr)
+    {
+        return false;
+    }
+    std::unique_ptr<uint8_t> Data;
+    uint32_t Size = 0;
+    if (!m_resourceManager.LoadResource(stdstr(uri).ToUTF16().c_str(), Data, Size))
+    {
+        element.SetHTML((uint8_t*)"", 0, SciterElement::SIH_REPLACE_CONTENT);
+        return false;
+    }
+    element.SetHTML(Data.get(), Size, SciterElement::SIH_REPLACE_CONTENT);
+    return true;
 }
 
 bool Sciter::WindowCreate(HWINDOW parent, const char * baseHtml, int x, int y, int width, int height, ISciterWindow *& window)
