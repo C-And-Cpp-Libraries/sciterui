@@ -68,7 +68,7 @@ public:
     SciterWindow(Sciter & sciter);
     ~SciterWindow();
 
-    bool Create(HWINDOW parentWinow, const char * htmlFile, int x, int y, int width, int height);
+    bool Create(HWINDOW parentWinow, const char * htmlFile, int x, int y, int width, int height, unsigned int flags);
     bool GetDestroyed(void) const;
     void SetDestroyed(void);
     bool AttachHandler(SCITER_ELEMENT element, const char * riid, void * interfacePtr);
@@ -117,6 +117,7 @@ private:
 
     Sciter & m_sciter;
     HWINDOW m_hWnd;
+    HWINDOW m_hParent;
     EventSinks m_eventSinks;
     WinDestroySinks m_onDestroySink;
     bool m_bound;

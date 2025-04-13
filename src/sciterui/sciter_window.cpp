@@ -15,6 +15,7 @@ namespace SciterUI
 SciterWindow::SciterWindow(Sciter & sciter) :
     m_sciter(sciter),
     m_hWnd(nullptr),
+    m_hParent(nullptr),
     m_bound(false),
     m_destroyed(false)
 {
@@ -24,17 +25,22 @@ SciterWindow::~SciterWindow()
 {
 }
 
-bool SciterWindow::Create(HWINDOW parentWinow, const char * htmlFile, int x, int y, int width, int height)
+bool SciterWindow::Create(HWINDOW parentWinow, const char * htmlFile, int x, int y, int width, int height, unsigned int flags)
 {
     RECT Frame;
     Frame.left = x;
     Frame.top = y;
     Frame.right = x + width;
     Frame.bottom = y + height;
-    UINT creationFlags = 0;
-    m_hWnd = ::SciterCreateWindow(creationFlags, (Frame.right - Frame.left) > 0 ? &Frame : nullptr, nullptr, this, (HWND)parentWinow);
+    m_hWnd = ::SciterCreateWindow(flags, (Frame.right - Frame.left) > 0 ? &Frame : nullptr, nullptr, this, (HWND)parentWinow);
     if (m_hWnd != nullptr)
     {
+        if (parentWinow != nullptr && (flags & SUIW_CHILD) != 0)
+        {
+            m_hParent = parentWinow;
+            EnableWindow((HWND)parentWinow, FALSE);
+        }
+
         m_sciter.WindowCreated(this);
         LoadHtml(htmlFile);
         ::SciterWindowExec((HWND)m_hWnd, SCITER_WINDOW_SET_STATE, SCITER_WINDOW_STATE_SHOWN, 0);
@@ -122,6 +128,10 @@ void SciterWindow::SetDestroyed(void)
         return;
     }
     m_destroyed = true;
+    if (m_hParent != nullptr)
+    {
+        EnableWindow((HWND)m_hParent, TRUE);
+    }
     for (EventSinks::iterator itr = m_eventSinks.begin(); itr != m_eventSinks.end(); itr++)
     {
         EventHandler * handler = itr->Sink.get();

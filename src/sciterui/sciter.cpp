@@ -106,10 +106,10 @@ bool Sciter::SetElementHtmlFromResource(SCITER_ELEMENT elemHandle, const char * 
     return true;
 }
 
-bool Sciter::WindowCreate(HWINDOW parent, const char * baseHtml, int x, int y, int width, int height, ISciterWindow *& window)
+bool Sciter::WindowCreate(HWINDOW parent, const char * baseHtml, int x, int y, int width, int height, unsigned int flags, ISciterWindow *& window)
 {
     std::unique_ptr<SciterWindow> sciterWindow(new SciterWindow(*this));
-    if (!sciterWindow->Create(parent, baseHtml, x, y, width, height))
+    if (!sciterWindow->Create(parent, baseHtml, x, y, width, height, flags))
     {
         return false;
     }
