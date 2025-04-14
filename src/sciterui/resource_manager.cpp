@@ -11,11 +11,11 @@ ResourceManager::ResourceManager(const char * languageDir) :
     m_resourceMap.emplace(RESOURCE_MAP::value_type(L"JPG", L"JPG"));
     m_resourceMap.emplace(RESOURCE_MAP::value_type(L"GIF", L"GIF"));
     m_resourceMap.emplace(RESOURCE_MAP::value_type(L"SVG", L"SVG"));
-    m_resourceMap.emplace(RESOURCE_MAP::value_type(L"BMP", (const wchar_t*)RT_BITMAP));
-    m_resourceMap.emplace(RESOURCE_MAP::value_type(L"ICO", (const wchar_t*)RT_GROUP_ICON));
-    m_resourceMap.emplace(RESOURCE_MAP::value_type(L"CUR", (const wchar_t*)RT_GROUP_CURSOR));
-    m_resourceMap.emplace(RESOURCE_MAP::value_type(L"HTM", (const wchar_t*)RT_HTML));
-    m_resourceMap.emplace(RESOURCE_MAP::value_type(L"HTML", (const wchar_t*)RT_HTML));
+    m_resourceMap.emplace(RESOURCE_MAP::value_type(L"BMP", (const wchar_t *)RT_BITMAP));
+    m_resourceMap.emplace(RESOURCE_MAP::value_type(L"ICO", (const wchar_t *)RT_GROUP_ICON));
+    m_resourceMap.emplace(RESOURCE_MAP::value_type(L"CUR", (const wchar_t *)RT_GROUP_CURSOR));
+    m_resourceMap.emplace(RESOURCE_MAP::value_type(L"HTM", (const wchar_t *)RT_HTML));
+    m_resourceMap.emplace(RESOURCE_MAP::value_type(L"HTML", (const wchar_t *)RT_HTML));
     m_resourceMap.emplace(RESOURCE_MAP::value_type(L"CSS", L"CSS"));
     m_resourceMap.emplace(RESOURCE_MAP::value_type(L"INI", L"LANG"));
     m_resourceMap.emplace(RESOURCE_MAP::value_type(L"LNG", L"LANG"));

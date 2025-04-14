@@ -17,7 +17,7 @@ File::~File()
     }
 }
 
-bool File::Open(const char* fileName, uint32_t openFlags)
+bool File::Open(const char * fileName, uint32_t openFlags)
 {
     if (!Close())
     {
@@ -100,7 +100,7 @@ uint32_t File::GetLength() const
     return GetFileSize(m_file, &hiWord);
 }
 
-uint32_t File::Read(void* lpBuf, uint32_t nCount)
+uint32_t File::Read(void * lpBuf, uint32_t nCount)
 {
     if (nCount == 0)
     {
@@ -115,4 +115,24 @@ uint32_t File::Read(void* lpBuf, uint32_t nCount)
     return (uint32_t)read;
 }
 
+bool File::Write(const void * buffer, uint32_t bufferSize)
+{
+    if (bufferSize == 0)
+    {
+        return true;
+    }
+
+    ULONG written = 0;
+    if (!::WriteFile(m_file, buffer, bufferSize, &written, nullptr))
+    {
+        return false;
+    }
+
+    if (written != bufferSize)
+    {
+        return false;
+    }
+    return true;
 }
+
+} // namespace SciterUI

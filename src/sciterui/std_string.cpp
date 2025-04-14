@@ -1,5 +1,6 @@
 #include "std_string.h"
 #include <Windows.h>
+#include <algorithm>
 #include <stdarg.h>
 
 namespace SciterUI
@@ -22,6 +23,31 @@ stdstr::stdstr(const stdstr & str) :
 stdstr::stdstr(const char * str) :
     std::string(str ? str : "")
 {
+}
+
+strvector stdstr::Tokenize(char delimiter) const
+{
+    strvector tokens;
+
+    stdstr::size_type lastPos = find_first_not_of(delimiter, 0);
+    stdstr::size_type pos = find_first_of(delimiter, lastPos);
+    while (stdstr::npos != pos)
+    {
+        tokens.push_back(substr(lastPos, pos - lastPos));
+        lastPos = pos + 1;
+        pos = find_first_of(delimiter, lastPos);
+    }
+    if (stdstr::npos != lastPos)
+    {
+        tokens.push_back(substr(lastPos));
+    }
+    return tokens;
+}
+
+stdstr & stdstr::ToUpper(void)
+{
+    std::transform(begin(), end(), begin(), (char (*)(int))toupper);
+    return *this;
 }
 
 stdstr & stdstr::Replace(const char search, const char replace)

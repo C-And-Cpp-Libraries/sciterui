@@ -23,22 +23,23 @@ public:
     };
 
     File();
-    File(void* fileHandle);
-    File(const char* fileName, uint32_t openFlags);
+    File(void * fileHandle);
+    File(const char * fileName, uint32_t openFlags);
     ~File();
 
-    bool Open(const char* fileName, uint32_t openFlags);
+    bool Open(const char * fileName, uint32_t openFlags);
     bool Close();
 
     uint32_t GetLength() const;
 
-    uint32_t Read(void* buffer, uint32_t bufferSize);
+    uint32_t Read(void * buffer, uint32_t bufferSize);
+    bool Write(const void * buffer, uint32_t bufferSize);
 
 private:
-    File(const File&) = delete;
-    File& operator=(const File&) = delete;
+    File(const File &) = delete;
+    File & operator=(const File &) = delete;
 
-    void* m_file;
+    void * m_file;
 };
 
-}
+} // namespace SciterUI

@@ -1,9 +1,13 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace SciterUI
 {
+
+class stdstr;
+typedef std::vector<stdstr> strvector;
 
 class stdstr :
     public std::string
@@ -18,6 +22,9 @@ public:
     stdstr(const std::string & str);
     stdstr(const stdstr & str);
     stdstr(const char * str);
+
+    strvector Tokenize(char delimiter) const;
+    stdstr & ToUpper(void);
 
     stdstr & Replace(const char search, const char replace);
     stdstr & Replace(const char * search, const char replace);

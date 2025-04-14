@@ -26,4 +26,4 @@ private:
     Path m_path;
 };
 
-}
+} // namespace SciterUI

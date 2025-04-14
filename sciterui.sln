@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34018.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sciterui", "src\sciterui\sciterui.vcxproj", "{847B64EE-2C78-48F9-912B-D700F2A5CB91}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "resource_packer", "src\resource_packer\resource_packer.vcxproj", "{61B81F77-92C0-4C94-A893-7458FBE76C0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,10 @@ Global
 		{847B64EE-2C78-48F9-912B-D700F2A5CB91}.Debug|x64.Build.0 = Debug|x64
 		{847B64EE-2C78-48F9-912B-D700F2A5CB91}.Release|x64.ActiveCfg = Release|x64
 		{847B64EE-2C78-48F9-912B-D700F2A5CB91}.Release|x64.Build.0 = Release|x64
+		{61B81F77-92C0-4C94-A893-7458FBE76C0B}.Debug|x64.ActiveCfg = Debug|x64
+		{61B81F77-92C0-4C94-A893-7458FBE76C0B}.Debug|x64.Build.0 = Debug|x64
+		{61B81F77-92C0-4C94-A893-7458FBE76C0B}.Release|x64.ActiveCfg = Release|x64
+		{61B81F77-92C0-4C94-A893-7458FBE76C0B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

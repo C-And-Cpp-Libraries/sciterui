@@ -99,7 +99,7 @@ bool Sciter::SetElementHtmlFromResource(SCITER_ELEMENT elemHandle, const char * 
     uint32_t Size = 0;
     if (!m_resourceManager.LoadResource(stdstr(uri).ToUTF16().c_str(), Data, Size))
     {
-        element.SetHTML((uint8_t*)"", 0, SciterElement::SIH_REPLACE_CONTENT);
+        element.SetHTML((uint8_t *)"", 0, SciterElement::SIH_REPLACE_CONTENT);
         return false;
     }
     element.SetHTML(Data.get(), Size, SciterElement::SIH_REPLACE_CONTENT);

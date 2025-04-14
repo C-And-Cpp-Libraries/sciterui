@@ -14,7 +14,7 @@ void BaseElement::AddWidget(IWidget * widget)
     m_Widgets.push_back(widget);
 }
 
-bool BaseElement::RemoveWidget(IWidget * widget)
+bool BaseElement::RemoveWidget(IWidget * /*widget*/)
 {
     return false;
 }

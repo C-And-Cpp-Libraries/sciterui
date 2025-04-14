@@ -73,7 +73,7 @@ void WidgetMenuBar::SetMenuContent(MenuBarItemList & items) const
     }
     html += "</ul>";
     impl->m_menuBarElem.SetHTML((const uint8_t *)html.data(), html.size(), SciterElement::SIH_REPLACE_CONTENT);
-    impl->m_sciterUI.AttachHandler(impl->m_menuBarElem, IID_ICLICKSINK, (IClickSink*)this);
+    impl->m_sciterUI.AttachHandler(impl->m_menuBarElem, IID_ICLICKSINK, (IClickSink *)this);
 }
 
 void WidgetMenuBar::AddSink(IMenuBarSink * sink)
