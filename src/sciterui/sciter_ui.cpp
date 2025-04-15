@@ -4,7 +4,9 @@
 
 std::unique_ptr<SciterUI::Sciter> g_sciter;
 
-bool SciterUIInit(const char * LanguageDir, const char * BaseLanguage, const char * CurrentLanguage, bool Console, ISciterUI *& sciterUI)
+bool SciterUIInit(const char * LanguageDir, const char * BaseLanguage,
+                  const char * CurrentLanguage, bool Console,
+                  ISciterUI *& sciterUI)
 {
     if (g_sciter.get() != nullptr)
     {

@@ -28,8 +28,7 @@ bool ProcessDir(const Path & targetFile, const Path & sourceDir, const char * su
     HANDLE update = BeginUpdateResourceW(stdstr(targetFile).ToUTF16().c_str(), false);
     if (update == nullptr)
     {
-        std::cout << "Error: failed to BeginUpdateResource on \"" << targetFile << "\n"
-                  << std::endl;
+        std::cout << "Error: failed to BeginUpdateResource on \"" << targetFile << "\n" << std::endl;
         targetFile.FileDelete();
         return false;
     }
@@ -87,9 +86,9 @@ bool ProcessDir(const Path & targetFile, const Path & sourceDir, const char * su
                 targetFile.FileDelete();
                 return false;
             }
-
         } while (targetDir.FindNext());
     }
+    ::EndUpdateResource(update, FALSE);
     return true;
 }
 

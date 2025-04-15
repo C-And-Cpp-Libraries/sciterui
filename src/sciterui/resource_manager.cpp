@@ -81,6 +81,23 @@ bool ResourceManager::LoadResource(const wchar_t * uri, std::unique_ptr<uint8_t>
 
 IModuleResource * ResourceManager::LoadLanguageFile(const char * language)
 {
+    Path moduleFile(m_languageDir, language);
+    moduleFile.SetExtension("lang");
+    if (moduleFile.FileExists())
+    {
+        std::unique_ptr<ModuleResource> resourceModule(new ModuleResource());
+        if (resourceModule.get() != nullptr)
+        {
+            if (!resourceModule->LoadModule(moduleFile))
+            {
+                return nullptr;
+            }
+            IModuleResource * module = resourceModule.get();
+            m_modulesResource.emplace_back(std::move(resourceModule));
+            return module;
+        }
+    }
+
     Path moduleDir(m_languageDir);
     moduleDir.AppendDirectory(language);
     if (moduleDir.DirectoryExists())

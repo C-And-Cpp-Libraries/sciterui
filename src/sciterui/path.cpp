@@ -213,6 +213,13 @@ void Path::SetDirectory(const char * directory, bool ensureAbsolute)
     SetComponents(drive.c_str(), newDirectory.c_str(), name.c_str(), extension.c_str());
 }
 
+void Path::SetExtension(const char * extension)
+{
+    std::string drive, directory, name;
+    GetComponents(&drive, &directory, &name);
+    SetComponents(drive.c_str(), directory.c_str(), name.c_str(), extension);
+}
+
 void Path::SetNameExtension(const char * nameExtension)
 {
     std::string directory, drive;

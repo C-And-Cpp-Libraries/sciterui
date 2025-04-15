@@ -14,6 +14,7 @@ class ResourceManager
 {
     typedef std::map<std::wstring, const wchar_t *> RESOURCE_MAP;
     typedef std::vector<std::unique_ptr<ModuleDisk>> ModulesDisk;
+    typedef std::vector<std::unique_ptr<ModuleResource>> ModulesResource;
 
 public:
     enum
@@ -36,6 +37,7 @@ private:
 
     IModuleResource * LoadLanguageFile(const char * language);
     ModulesDisk m_modulesDisk;
+    ModulesResource m_modulesResource;
     RESOURCE_MAP m_resourceMap;
     Path m_languageDir;
     IModuleResource * m_moduleBase;

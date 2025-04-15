@@ -42,6 +42,7 @@ public:
 
     void SetDriveDirectory(const char * driveDirectory);
     void SetDirectory(const char * directory, bool ensureAbsolute = false);
+    void SetExtension(const char * extension);
     void SetNameExtension(const char * nameExtension);
     void SetComponents(const char * drive, const char * directory, const char * name, const char * extension);
     void AppendDirectory(const char * subDirectory);
