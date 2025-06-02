@@ -46,8 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\sciter_element.h" />
+    <ClInclude Include="..\..\include\sciter_handler.h" />
     <ClInclude Include="..\..\include\sciter_ui.h" />
     <ClInclude Include="..\..\include\sciter_value.h" />
+    <ClInclude Include="..\..\include\widgets\menubar.h" />
     <ClInclude Include="base_element.h" />
     <ClInclude Include="event_handler.h" />
     <ClInclude Include="file.h" />

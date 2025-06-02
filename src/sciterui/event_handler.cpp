@@ -101,4 +101,37 @@ int EventHandler::ClickHandler(void * tag, SCITER_ELEMENT he, uint32_t evtg, voi
     return false;
 }
 
+int EventHandler::KeyHandler(void* tag, SCITER_ELEMENT he, uint32_t evtg, void* prms)
+{
+    EventHandler* handler = (EventHandler*)tag;
+    if (evtg == SUBSCRIPTIONS_REQUEST && handler != nullptr)
+    {
+        uint32_t * p = (uint32_t *)prms;
+        *p = handler->m_Subscription;
+        return true;
+    }
+    else if (evtg == HANDLE_INITIALIZATION)
+    {
+        return true;
+    }
+    else if (evtg == HANDLE_KEY)
+    {
+        IKeySink * keySink = handler != nullptr ? (IKeySink*)handler->m_Interface : nullptr;
+        KEY_PARAMS * p = (KEY_PARAMS*)prms;
+        if (p->cmd == KEY_DOWN)
+        {
+            return keySink->OnKeyDown(he, p->target, (SciterKeys)p->key_code, p->alt_state);
+        }
+        if (p->cmd == KEY_UP)
+        {
+            return keySink->OnKeyUp(he, p->target, (SciterKeys)p->key_code, p->alt_state);
+        }
+        if (p->cmd == KEY_CHAR)
+        {
+            return keySink->OnKeyChar(he, p->target, (SciterKeys)p->key_code, p->alt_state);
+        }
+    }
+    return false;
+}
+
 } // namespace SciterUI

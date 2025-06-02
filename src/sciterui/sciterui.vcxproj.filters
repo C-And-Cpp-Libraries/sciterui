@@ -19,6 +19,9 @@
     <Filter Include="Source Files\widgets">
       <UniqueIdentifier>{4bfd750b-7f2c-403a-bf5c-6a361bf6aba5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\widgets">
+      <UniqueIdentifier>{b1d11d3b-029b-4cf6-b7e6-9d9b2ffa6687}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sciter_ui.cpp">
@@ -109,6 +112,12 @@
     </ClInclude>
     <ClInclude Include="base_element.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sciter_handler.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\widgets\menubar.h">
+      <Filter>include\widgets</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
