@@ -23,6 +23,7 @@ bool Sciter::Initialize(const char * baseLanguage, const char * currentLanguage,
         return false;
     }
     SciterExec(SCITER_APP_INIT, (UINT_PTR)0, (UINT_PTR) nullptr);
+    SciterSetOption(NULL, SCITER_SET_SCRIPT_RUNTIME_FEATURES, ALLOW_FILE_IO | ALLOW_SOCKET_IO | ALLOW_EVAL | ALLOW_SYSINFO);
     return true;
 }
 
@@ -186,6 +187,74 @@ ResourceManager & Sciter::GetResourceManager(void)
 {
     return m_resourceManager;
 }
+
+#ifdef WIN32
+const std::wstring & Sciter::WindowClass()
+{
+    if (!m_windowClass.empty())
+    {
+        return m_windowClass;
+    }
+    m_windowClass = L"sciterui_window";
+    WNDCLASSEX wcex;
+
+    wcex.cbSize = sizeof(WNDCLASSEX);
+
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = WndProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = sizeof(Sciter *);
+    wcex.hInstance = GetModuleHandle(nullptr);
+    wcex.hIcon = nullptr;
+    wcex.hCursor = nullptr;
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.lpszMenuName = nullptr;
+    wcex.lpszClassName = m_windowClass.c_str();
+    wcex.hIconSm = nullptr;
+
+    RegisterClassExW(&wcex);
+    return m_windowClass;
+}
+
+LRESULT CALLBACK Sciter::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    switch (message)
+    {
+    case WM_NCCREATE: {
+        Sciter* pThis = (Sciter*)(((CREATESTRUCT*)lParam)->lpCreateParams);
+        SetWindowLongPtr(hwnd, 0, (LONG_PTR)pThis);
+        break;
+    }
+    case WM_GETMINMAXINFO: {
+        HELEMENT h = 0;
+        SciterGetRootElement((HWND)hwnd, &h);
+        SciterElement root(h);
+        if (root.IsValid())
+        {
+            int32_t minWidth = atoi(root.GetAttribute("window-min-width").c_str());
+            int32_t minHeight = atoi(root.GetAttribute("window-min-height").c_str());
+            if (minWidth != 0 && minHeight != 0)
+            {
+                LRESULT lr = DefWindowProc(hwnd, message, wParam, lParam);
+                MINMAXINFO* pmmi = (MINMAXINFO*)lParam;
+                pmmi->ptMinTrackSize.x = minWidth;
+                pmmi->ptMinTrackSize.y = minHeight;
+                return lr;
+            }
+        }
+        break;
+    }
+    }
+
+    BOOL handled = FALSE;
+    LRESULT lResult = ::SciterProcND(hwnd, message, wParam, lParam, &handled);
+    if (handled)
+    {
+        return lResult;
+    }
+    return ::DefWindowProc(hwnd, message, wParam, lParam);
+}
+#endif
 
 int Sciter::AttachWidgetProc(WidgetCallbackInfo * info, SCITER_ELEMENT he, uint32_t evtg, void * prms)
 {

@@ -9,6 +9,10 @@
 #include <stdint.h>
 #include <vector>
 
+#ifdef WIN32
+#include <Windows.h>
+#endif
+
 namespace SciterUI
 {
 
@@ -72,6 +76,9 @@ public:
     void Shutdown();
 
     ResourceManager & GetResourceManager(void);
+#ifdef WIN32
+    const std::wstring & WindowClass();
+#endif
 
 private:
     Sciter() = delete;
@@ -86,6 +93,12 @@ private:
     WidgetMap m_widgetFactory;
     ElementMap m_elementBases;
     uint32_t m_nextWidgetId;
+
+#ifdef WIN32
+    static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+    std::wstring m_windowClass;
+#endif
+
 };
 
 } // namespace SciterUI

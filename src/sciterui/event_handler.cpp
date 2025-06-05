@@ -134,4 +134,29 @@ int EventHandler::KeyHandler(void* tag, SCITER_ELEMENT he, uint32_t evtg, void* 
     return false;
 }
 
+int EventHandler::ResizeHandler(void* tag, SCITER_ELEMENT he, uint32_t evtg, void* prms)
+{
+    EventHandler* handler = (EventHandler*)tag;
+    if (evtg == SUBSCRIPTIONS_REQUEST && handler != nullptr)
+    {
+        uint32_t* p = (uint32_t*)prms;
+        *p = handler->m_Subscription;
+        return true;
+    }
+    else if (evtg == HANDLE_INITIALIZATION)
+    {
+        return true;
+    }
+    else if (evtg == HANDLE_SIZE)
+    {
+        IResizeSink * resizeSink = handler != nullptr ? (IResizeSink *)handler->m_Interface : nullptr;
+        if (resizeSink)
+        {
+            return resizeSink->OnSizeChanged(he);
+        }
+        return false;
+    }
+    return false;
+}
+
 } // namespace SciterUI

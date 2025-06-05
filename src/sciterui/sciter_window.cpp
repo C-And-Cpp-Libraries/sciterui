@@ -27,12 +27,17 @@ SciterWindow::~SciterWindow()
 
 bool SciterWindow::Create(HWINDOW parentWinow, const char * htmlFile, int x, int y, int width, int height, unsigned int flags)
 {
+#ifdef WIN32
+    m_hWnd = CreateWindowEx(WS_EX_APPWINDOW, m_sciter.WindowClass().c_str(), L"", WS_CLIPCHILDREN | WS_CLIPSIBLINGS, x, y, width, height, (HWND)parentWinow, nullptr, GetModuleHandle(nullptr), &m_sciter);
+#else
     RECT Frame;
     Frame.left = x;
     Frame.top = y;
     Frame.right = x + width;
     Frame.bottom = y + height;
+
     m_hWnd = ::SciterCreateWindow(flags, (Frame.right - Frame.left) > 0 ? &Frame : nullptr, nullptr, this, (HWND)parentWinow);
+#endif
     if (m_hWnd != nullptr)
     {
         if (parentWinow != nullptr && (flags & SUIW_CHILD) != 0)
@@ -44,6 +49,11 @@ bool SciterWindow::Create(HWINDOW parentWinow, const char * htmlFile, int x, int
         m_sciter.WindowCreated(this);
         LoadHtml(htmlFile);
         ::SciterWindowExec((HWND)m_hWnd, SCITER_WINDOW_SET_STATE, SCITER_WINDOW_STATE_SHOWN, 0);
+
+        UINT width = SciterGetMinWidth((HWND)m_hWnd);
+        UINT height = SciterGetMinHeight((HWND)m_hWnd, width);
+        int a = 5;
+        a = 6;
     }
     return m_hWnd != nullptr;
 }
@@ -198,6 +208,11 @@ bool SciterWindow::GetEventProc(const char * riid, LPELEMENT_EVENT_PROC & eventP
     {
         eventProc = &EventHandler::KeyHandler;
         subscription = HANDLE_KEY;
+    }
+    else if (strcmp(IID_IRESIZESINK, riid) == 0)
+    {
+        eventProc = &EventHandler::ResizeHandler;
+        subscription = HANDLE_SIZE;
     }
     else
     {

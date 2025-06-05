@@ -141,3 +141,9 @@ __interface IKeySink
     bool OnKeyChar(SCITER_ELEMENT element, SCITER_ELEMENT target, SciterKeys keyCode, uint32_t keyboardState) = 0;
 };
 static const char * IID_IKEYSINK = "DC6A7757-D203-4636-A738-998C688E602C";
+
+__interface IResizeSink
+{
+    bool OnSizeChanged(SCITER_ELEMENT elem) = 0;
+};
+static const char * IID_IRESIZESINK = "AE59F6AB-045C-4CCC-A2C6-3CFBD6F288F0";
