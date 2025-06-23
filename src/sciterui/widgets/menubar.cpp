@@ -6,9 +6,54 @@
 #include <set>
 #include <widgets/menubar.h>
 
-WidgetMenuBar::MenuBars WidgetMenuBar::m_instances;
+class WidgetMenuBar :
+    public std::enable_shared_from_this<WidgetMenuBar>,
+    public IWidget,
+    public IMenuBar,
+    public IClickSink,
+    public ISciterElementCallback
+{
+    typedef std::map<WidgetMenuBar *, std::shared_ptr<WidgetMenuBar>> MenuBars;
+    typedef std::set<IMenuBarSink *> IMenuBarSinkSet;
 
-typedef std::set<IMenuBarSink *> IMenuBarSinkSet;
+public:
+    static void Register(ISciterUI& sciterUI);
+
+    //IMenuBar
+    void SetMenuContent(MenuBarItemList& items) const;
+    void AddSink(IMenuBarSink* sink);
+    void RemoveSink(IMenuBarSink* sink);
+
+private:
+    WidgetMenuBar(ISciterUI& SciterUI);
+
+    WidgetMenuBar(void) = delete;
+    WidgetMenuBar(const WidgetMenuBar&) = delete;
+    WidgetMenuBar& operator=(const WidgetMenuBar&) = delete;
+
+    // IWidget
+    void Attached(SCITER_ELEMENT element, IBaseElement* baseElement);
+    void Detached(SCITER_ELEMENT element);
+    bool GetInterface(const char* riid, void** object);
+
+    // ISciterElementCallback
+    bool OnSciterElement(SCITER_ELEMENT he);
+
+    // IClickSink
+    bool OnClick(SCITER_ELEMENT element, SCITER_ELEMENT source, uint32_t reason);
+
+    static std::string MenuItemHtml(const MenuBarItem& item, uint32_t indent);
+    static IWidget* __stdcall CreateWidget(ISciterUI& sciterUI);
+
+    static MenuBars m_instances;
+
+    ISciterUI & m_sciterUI;
+    IBaseElement * m_baseElement;
+    SciterElement m_menuBarElem;
+    IMenuBarSinkSet m_sinks;
+};
+
+WidgetMenuBar::MenuBars WidgetMenuBar::m_instances;
 
 MenuBarItem::MenuBarItem(int32_t id, const char * title, MenuBarItemList * subMenu)
 {
@@ -26,7 +71,7 @@ int MenuBarItem::ID() const
 {
     return m_id;
 }
-
+    
 const char * MenuBarItem::Title() const
 {
     return m_title.c_str();
@@ -36,22 +81,6 @@ const MenuBarItemList * MenuBarItem::SubMenu() const
 {
     return m_subMenu;
 }
-
-struct WidgetMenuBar::Impl
-{
-    explicit Impl(WidgetMenuBar & menuBar, ISciterUI & sciterUI) :
-        m_menuBar(menuBar),
-        m_sciterUI(sciterUI),
-        m_baseElement(nullptr)
-    {
-    }
-
-    WidgetMenuBar & m_menuBar;
-    ISciterUI & m_sciterUI;
-    IBaseElement * m_baseElement;
-    SciterElement m_menuBarElem;
-    IMenuBarSinkSet m_sinks;
-};
 
 void WidgetMenuBar::Register(ISciterUI & sciterUI)
 {
@@ -72,33 +101,34 @@ void WidgetMenuBar::SetMenuContent(MenuBarItemList & items) const
         html += MenuItemHtml(*itr, 2);
     }
     html += "</ul>";
-    impl->m_menuBarElem.SetHTML((const uint8_t *)html.data(), html.size(), SciterElement::SIH_REPLACE_CONTENT);
-    impl->m_sciterUI.AttachHandler(impl->m_menuBarElem, IID_ICLICKSINK, (IClickSink *)this);
+    m_menuBarElem.SetHTML((const uint8_t *)html.data(), html.size(), SciterElement::SIH_REPLACE_CONTENT);
+    m_sciterUI.AttachHandler(m_menuBarElem, IID_ICLICKSINK, (IClickSink *)this);
 }
 
 void WidgetMenuBar::AddSink(IMenuBarSink * sink)
 {
-    impl->m_sinks.insert(sink);
+    m_sinks.insert(sink);
 }
 
 void WidgetMenuBar::RemoveSink(IMenuBarSink * sink)
 {
-    IMenuBarSinkSet::iterator itr = impl->m_sinks.find(sink);
-    if (itr != impl->m_sinks.end())
+    IMenuBarSinkSet::iterator itr = m_sinks.find(sink);
+    if (itr != m_sinks.end())
     {
-        impl->m_sinks.erase(itr);
+        m_sinks.erase(itr);
     }
 }
 
 void WidgetMenuBar::Attached(SCITER_ELEMENT element, IBaseElement * baseElement)
 {
-    impl->m_baseElement = baseElement;
-    impl->m_menuBarElem = element;
+    m_baseElement = baseElement;
+    m_menuBarElem = element;
 }
 
 void WidgetMenuBar::Detached(SCITER_ELEMENT /*element*/)
 {
-    __debugbreak();
+    m_baseElement = nullptr;
+    m_menuBarElem = nullptr;
 }
 
 bool WidgetMenuBar::GetInterface(const char * riid, void ** object)
@@ -116,7 +146,7 @@ bool WidgetMenuBar::OnSciterElement(SCITER_ELEMENT he)
     std::string menuIdvalue = SciterElement(he).GetAttribute("data-menu_id");
     if (!menuIdvalue.empty())
     {
-        impl->m_sciterUI.AttachHandler(he, IID_ICLICKSINK, (IClickSink *)this);
+        m_sciterUI.AttachHandler(he, IID_ICLICKSINK, (IClickSink *)this);
     }
     return false;
 }
@@ -137,9 +167,12 @@ bool WidgetMenuBar::OnClick(SCITER_ELEMENT element, SCITER_ELEMENT source, uint3
     if (!menuIdvalue.empty())
     {
         SciterElement menu = SciterElement(element).FindFirst("menu[window-state=\"shown\"]");
-        menu.HidePopup();
+        if (menu.IsValid())
+        {
+            menu.HidePopup();
+        }
 
-        for (IMenuBarSinkSet::iterator itr = impl->m_sinks.begin(); itr != impl->m_sinks.end(); itr++)
+        for (IMenuBarSinkSet::iterator itr = m_sinks.begin(); itr != m_sinks.end(); itr++)
         {
             (*itr)->OnMenuItem(std::stoi(menuIdvalue), item);
         }
@@ -185,6 +218,12 @@ IWidget * WidgetMenuBar::CreateWidget(ISciterUI & sciterUI)
 }
 
 WidgetMenuBar::WidgetMenuBar(ISciterUI & sciterUI) :
-    impl{std::make_unique<Impl>(*this, sciterUI)}
+    m_sciterUI(sciterUI),
+    m_baseElement(nullptr)
 {
+}
+
+void Register_WidgetMenuBar(ISciterUI& sciterUI)
+{
+    WidgetMenuBar::Register(sciterUI);
 }

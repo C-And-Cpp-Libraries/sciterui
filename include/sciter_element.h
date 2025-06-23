@@ -106,19 +106,27 @@ public:
 
     bool IsValid() const;
 
+    bool Create(const char * tagName, const char * text);
+    void Detach() const;
     SciterElement FindFirst(const char * selector, ...) const;
     std::string GetAttribute(const char * name) const;
     void SetAttribute(const char * name, const char * value) const;
-    HWINDOW GetElementHwnd(bool rootWindow);
-    SciterElement GetElementByID(const char * id) const;
+    std::string GetAttributeByName(const char* id) const;
+    uint32_t GetChildCount() const;
+    SciterElement GetElementByID(const char* id) const;
+    HWINDOW GetElementHwnd(bool rootWindow) const;
+    std::string GetHTML(bool OuterHtml) const;
     SciterElement GetParent() const;
+    SciterElement GetRoot() const;
     void HidePopup() const;
+    void Insert(const SCITER_ELEMENT & e, uint32_t Index);
     bool ReleaseCapture(void) const;
     void SelectElements(ISciterElementCallback * pcall, const char * selectors) const;
     bool SetCapture(void) const;
     void SetHTML(const uint8_t * hHtml, size_t htmlLength, int where = SIH_REPLACE_CONTENT) const;
     RECT GetLocation(uint32_t area = ROOT_RELATIVE | CONTENT_BOX) const;
     void SetState(uint32_t bitsToSet, uint32_t bitsToClear, bool update) const;
+    void SetStyleAttribute(const char* Name, const wchar_t* Value) const;
     SciterValue Eval(const char * script);
 
 private:

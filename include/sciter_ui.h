@@ -10,9 +10,9 @@ __interface IWindowDestroySink
 
 __interface ISciterWindow
 {
-    void CenterWindow(void) = 0;
+    void CenterWindow() = 0;
     HWINDOW GetHandle() const = 0;
-    SCITER_ELEMENT GetRootElement(void) const = 0;
+    SCITER_ELEMENT GetRootElement() const = 0;
     void OnDestroySinkAdd(IWindowDestroySink * Sink) = 0;
     void OnDestroySinkRemove(IWindowDestroySink * Sink) = 0;
 };

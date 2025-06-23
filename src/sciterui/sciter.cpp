@@ -265,21 +265,36 @@ int Sciter::AttachWidgetProc(WidgetCallbackInfo * info, SCITER_ELEMENT he, uint3
 
     if (evtg == HANDLE_INITIALIZATION)
     {
-        INITIALIZATION_PARAMS * p = (INITIALIZATION_PARAMS *)prms;
-        if (p->cmd == BEHAVIOR_ATTACH)
+        std::string widgetValue = SciterElement(he).GetAttribute("data-widget");
+        if (widgetValue.size() == 0)
         {
-            std::string widgetValue = SciterElement(he).GetAttribute("data-widget");
-            if (widgetValue.size() == 0)
-            {
-                return 0;
-            }
-            int windgetId = std::stoi(widgetValue, nullptr, 10);
-            IWidgetMap::const_iterator IWidgetIter = info->widgets.find(windgetId);
-            if (IWidgetIter == info->widgets.end())
-            {
-                return 0;
-            }
+            return 0;
+        }
+        int windgetId = std::stoi(widgetValue, nullptr, 10);
+        IWidgetMap::const_iterator IWidgetIter = info->widgets.find(windgetId);
+        if (IWidgetIter == info->widgets.end())
+        {
+            return 0;
+        }
 
+        INITIALIZATION_PARAMS * p = (INITIALIZATION_PARAMS *)prms;
+        if (p->cmd == BEHAVIOR_DETACH)
+        {
+            ElementMap::iterator itr = m_elementBases.find(windgetId);
+            if (itr != m_elementBases.end())
+            {
+                std::shared_ptr<BaseElement> elementBase = itr->second;
+                if (elementBase != nullptr)
+                {
+                    IWidget * widget = IWidgetIter->second;
+                    widget->Detached(he);
+                    elementBase->RemoveWidget(widget);
+                }
+                m_elementBases.erase(itr);
+            }
+        }
+        else if (p->cmd == BEHAVIOR_ATTACH)
+        {
             std::shared_ptr<BaseElement> elementBase;
             ElementMap::iterator BaseIter = m_elementBases.find(windgetId);
             if (BaseIter != m_elementBases.end())

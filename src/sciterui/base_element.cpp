@@ -14,8 +14,16 @@ void BaseElement::AddWidget(IWidget * widget)
     m_Widgets.push_back(widget);
 }
 
-bool BaseElement::RemoveWidget(IWidget * /*widget*/)
+bool BaseElement::RemoveWidget(IWidget * widget)
 {
+    for (WIDGETS::iterator itr = m_Widgets.begin(); itr != m_Widgets.end(); itr++)
+    {
+        if (*itr == widget)
+        {
+            m_Widgets.erase(itr);
+            return true;
+        }
+    }
     return false;
 }
 

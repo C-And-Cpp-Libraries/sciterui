@@ -10,6 +10,8 @@ class Sciter;
 class BaseElement :
     public IBaseElement
 {
+    typedef std::vector<IWidget*> WIDGETS;
+
 public:
     BaseElement(Sciter & sciter, SCITER_ELEMENT element);
 
@@ -26,7 +28,7 @@ private:
 
     Sciter & m_sciter;
     SCITER_ELEMENT m_element;
-    std::vector<IWidget *> m_Widgets;
+    WIDGETS m_Widgets;
 };
 
 } // namespace SciterUI

@@ -74,11 +74,11 @@ public:
     bool AttachHandler(SCITER_ELEMENT element, const char * riid, void * interfacePtr);
 
     //ISciterWindow
-    void CenterWindow(void);
-    HWINDOW GetHandle() const;
-    SCITER_ELEMENT GetRootElement(void) const;
-    void OnDestroySinkAdd(IWindowDestroySink * Sink);
-    void OnDestroySinkRemove(IWindowDestroySink * Sink);
+    void CenterWindow() override;
+    HWINDOW GetHandle() const override;
+    SCITER_ELEMENT GetRootElement() const override;
+    void OnDestroySinkAdd(IWindowDestroySink * Sink) override;
+    void OnDestroySinkRemove(IWindowDestroySink * Sink) override;
 
 private:
     SciterWindow(void) = delete;

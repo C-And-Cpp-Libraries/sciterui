@@ -49,46 +49,4 @@ __interface IMenuBar
     void RemoveSink(IMenuBarSink * sink);
 };
 
-class WidgetMenuBar :
-    public std::enable_shared_from_this<WidgetMenuBar>,
-    public IWidget,
-    public IMenuBar,
-    public IClickSink,
-    public ISciterElementCallback
-{
-    typedef std::map<WidgetMenuBar *, std::shared_ptr<WidgetMenuBar>> MenuBars;
-
-public:
-    static void Register(ISciterUI & sciterUI);
-
-    //IMenuBar
-    void SetMenuContent(MenuBarItemList & items) const;
-    void AddSink(IMenuBarSink * sink);
-    void RemoveSink(IMenuBarSink * sink);
-
-private:
-    WidgetMenuBar(ISciterUI & SciterUI);
-
-    WidgetMenuBar(void) = delete;
-    WidgetMenuBar(const WidgetMenuBar &) = delete;
-    WidgetMenuBar & operator=(const WidgetMenuBar &) = delete;
-
-    // IWidget
-    void Attached(SCITER_ELEMENT element, IBaseElement * baseElement);
-    void Detached(SCITER_ELEMENT element);
-    bool GetInterface(const char * riid, void ** object);
-
-    // ISciterElementCallback
-    bool OnSciterElement(SCITER_ELEMENT he);
-
-    // IClickSink
-    bool OnClick(SCITER_ELEMENT element, SCITER_ELEMENT source, uint32_t reason);
-
-    static std::string MenuItemHtml(const MenuBarItem & item, uint32_t indent);
-    static IWidget * __stdcall CreateWidget(ISciterUI & sciterUI);
-
-    static MenuBars m_instances;
-
-    struct Impl;
-    std::unique_ptr<Impl> impl;
-};
+void Register_WidgetMenuBar(ISciterUI & sciterUI);
