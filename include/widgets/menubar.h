@@ -1,11 +1,8 @@
 #pragma once
-#include <list>
-#include <map>
-#include <memory>
-#include <sciter_element.h>
-#include <sciter_handler.h>
 #include <sciter_ui.h>
 #include <stdint.h>
+#include <string>
+#include <list>
 
 class MenuBarItem;
 typedef std::list<MenuBarItem> MenuBarItemList;

@@ -1,4 +1,5 @@
 #include "std_string.h"
+#include <map>
 #include <memory>
 #include <sciter_element.h>
 #include <sciter_handler.h>
@@ -34,7 +35,7 @@ private:
     // IWidget
     void Attached(SCITER_ELEMENT element, IBaseElement* baseElement);
     void Detached(SCITER_ELEMENT element);
-    bool GetInterface(const char* riid, void** object);
+    std::shared_ptr<void>  GetInterface(const char* riid);
 
     // ISciterElementCallback
     bool OnSciterElement(SCITER_ELEMENT he);
@@ -131,14 +132,13 @@ void WidgetMenuBar::Detached(SCITER_ELEMENT /*element*/)
     m_menuBarElem = nullptr;
 }
 
-bool WidgetMenuBar::GetInterface(const char * riid, void ** object)
+std::shared_ptr<void> WidgetMenuBar::GetInterface(const char * riid)
 {
     if (strcmp(riid, IID_IMENUBAR) == 0)
     {
-        *object = std::static_pointer_cast<IMenuBar>(shared_from_this()).get();
-        return true;
+        return std::static_pointer_cast<IMenuBar>(shared_from_this());
     }
-    return false;
+    return nullptr;
 }
 
 bool WidgetMenuBar::OnSciterElement(SCITER_ELEMENT he)

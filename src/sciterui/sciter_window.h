@@ -79,6 +79,7 @@ public:
     SCITER_ELEMENT GetRootElement() const override;
     void OnDestroySinkAdd(IWindowDestroySink * Sink) override;
     void OnDestroySinkRemove(IWindowDestroySink * Sink) override;
+    bool Destroy() override;
 
 private:
     SciterWindow(void) = delete;

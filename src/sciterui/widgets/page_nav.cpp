@@ -1,6 +1,10 @@
 #include <widgets/page_nav.h>
+#include <sciter_element.h>
+#include <sciter_handler.h>
 #include "std_string.h"
+#include <map>
 #include <memory>
+#include <set>
 
 namespace SciterUI
 {
@@ -63,7 +67,7 @@ private:
     //IWidget
     void Attached(SCITER_ELEMENT element, IBaseElement * baseElement);
     void Detached(SCITER_ELEMENT element);
-    bool GetInterface(const char * riid, void ** object);
+    std::shared_ptr<void> GetInterface(const char * riid);
 
     // ISciterElementCallback
     bool OnSciterElement(SCITER_ELEMENT he);
@@ -151,14 +155,13 @@ void WidgetPageNav::Detached(SCITER_ELEMENT /*Element*/)
     m_pages.clear();
 }
 
-bool WidgetPageNav::GetInterface(const char * riid, void ** object)
+std::shared_ptr<void> WidgetPageNav::GetInterface(const char * riid)
 {
     if (strcmp(riid, IID_IPAGENAV) == 0)
     {
-        *object = std::static_pointer_cast<IPageNav>(shared_from_this()).get();
-        return true;
+        return std::static_pointer_cast<IPageNav>(shared_from_this());
     }
-    return false;
+    return nullptr;
 }
 
 bool WidgetPageNav::ShouldChangePage(CPage * newPage, CPage * currentPage)

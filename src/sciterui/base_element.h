@@ -19,7 +19,7 @@ public:
     bool RemoveWidget(IWidget * widget);
 
     //IBaseElement
-    bool GetInterface(const char * riid, void ** interfacePtr);
+    std::shared_ptr<void> GetInterface(const char * riid);
 
 private:
     BaseElement() = delete;

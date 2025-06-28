@@ -72,6 +72,9 @@
     <ClCompile Include="widgets\page_nav.cpp">
       <Filter>Source Files\widgets</Filter>
     </ClCompile>
+    <ClCompile Include="widgets\combo_box.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sciter.h">
@@ -123,6 +126,9 @@
       <Filter>include\widgets</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\widgets\page_nav.h">
+      <Filter>include\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\widgets\combo_box.h">
       <Filter>include\widgets</Filter>
     </ClInclude>
   </ItemGroup>

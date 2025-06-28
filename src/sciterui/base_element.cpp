@@ -27,16 +27,17 @@ bool BaseElement::RemoveWidget(IWidget * widget)
     return false;
 }
 
-bool BaseElement::GetInterface(const char * riid, void ** interfacePtr)
+std::shared_ptr<void> BaseElement::GetInterface(const char * riid)
 {
     for (size_t i = 0; i < m_Widgets.size(); i++)
     {
-        if (m_Widgets[i]->GetInterface(riid, interfacePtr))
+        std::shared_ptr<void> sharedPtr = m_Widgets[i]->GetInterface(riid);
+        if (sharedPtr)
         {
-            return true;
+            return sharedPtr;
         }
     }
-    return false;
+    return nullptr;
 }
 
 } // namespace SciterUI

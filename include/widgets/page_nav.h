@@ -1,10 +1,5 @@
 #pragma once
-#include <sciter_element.h>
-#include <sciter_handler.h>
 #include <sciter_ui.h>
-#include <map>
-#include <memory>
-#include <set>
 #include <string>
 
 __interface IPagesSink

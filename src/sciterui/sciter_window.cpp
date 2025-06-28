@@ -126,6 +126,11 @@ void SciterWindow::OnDestroySinkRemove(IWindowDestroySink * Sink)
     }
 }
 
+bool SciterWindow::Destroy()
+{
+    return PostMessage((HWND)m_hWnd, WM_CLOSE, 0, 0) != 0;
+}
+
 bool SciterWindow::GetDestroyed(void) const
 {
     return m_destroyed;

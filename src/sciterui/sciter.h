@@ -65,7 +65,7 @@ public:
 
     // ISciterUI
     bool AttachHandler(SCITER_ELEMENT elemHandle, const char * riid, void * pinterface);
-    bool GetElementInterface(SCITER_ELEMENT he, const char * riid, void ** pinterface);
+    std::shared_ptr<void> GetElementInterface(SCITER_ELEMENT he, const char * riid);
     bool SetElementHtmlFromResource(SCITER_ELEMENT elemHandle, const char * uri);
     bool WindowCreate(HWINDOW parent, const char * baseHtml, int x, int y, int width, int height, unsigned int flags, ISciterWindow *& window);
     bool RegisterWidgetType(const char * name, tyCreateWidget createWidget, const char * widgetCss);

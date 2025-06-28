@@ -51,24 +51,24 @@ bool Sciter::AttachHandler(SCITER_ELEMENT elemHandle, const char * riid, void * 
     return false;
 }
 
-bool Sciter::GetElementInterface(SCITER_ELEMENT he, const char * riid, void ** pinterface)
+std::shared_ptr<void> Sciter::GetElementInterface(SCITER_ELEMENT he, const char * riid)
 {
     if (he == nullptr)
     {
-        return false;
+        return nullptr;
     }
     std::string widgetValue = SciterElement(he).GetAttribute("data-widget");
     if (widgetValue.size() == 0)
     {
-        return false;
+        return nullptr;
     }
     int windgetId = std::stoi(widgetValue, nullptr, 10);
     ElementMap::iterator itr = m_elementBases.find(windgetId);
     if (itr != m_elementBases.end())
     {
-        return itr->second->GetInterface(riid, pinterface);
+        return itr->second->GetInterface(riid);
     }
-    return false;
+    return nullptr;
 }
 
 void Sciter::WindowCreated(SciterWindow * window)

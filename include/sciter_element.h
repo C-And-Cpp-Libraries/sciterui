@@ -112,12 +112,14 @@ public:
     std::string GetAttribute(const char * name) const;
     void SetAttribute(const char * name, const char * value) const;
     std::string GetAttributeByName(const char* id) const;
+    SCITER_ELEMENT GetChild(uint32_t Index) const;
     uint32_t GetChildCount() const;
     SciterElement GetElementByID(const char* id) const;
     HWINDOW GetElementHwnd(bool rootWindow) const;
     std::string GetHTML(bool OuterHtml) const;
     SciterElement GetParent() const;
     SciterElement GetRoot() const;
+    uint32_t GetState() const;
     void HidePopup() const;
     void Insert(const SCITER_ELEMENT & e, uint32_t Index);
     bool ReleaseCapture(void) const;

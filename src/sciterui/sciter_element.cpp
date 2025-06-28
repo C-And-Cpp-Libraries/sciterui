@@ -162,6 +162,13 @@ std::string SciterElement::GetAttributeByName(const char* Name) const
     return SciterUI::stdstr().FromUTF16(s.c_str());
 }
 
+SCITER_ELEMENT SciterElement::GetChild(uint32_t Index) const
+{
+    HELEMENT Child = 0;
+    SciterGetNthChild((HELEMENT)m_he, Index, &Child);
+    return (SCITER_ELEMENT)Child;
+}
+
 uint32_t SciterElement::GetChildCount(void) const
 {
     uint32_t Count = 0;
@@ -202,6 +209,15 @@ SciterElement SciterElement::GetRoot() const
         return ParentElement.GetRoot();
     }
     return SciterElement(m_he);
+}
+
+uint32_t SciterElement::GetState() const
+{
+    UINT state = 0;
+    SCDOM_RESULT r = SciterGetElementState((HELEMENT)m_he, &state);
+    assert(r == SCDOM_OK);
+    (void)r;
+    return state; /*ELEMENT_STATE_BITS*/
 }
 
 void SciterElement::HidePopup() const
