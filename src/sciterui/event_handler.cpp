@@ -6,6 +6,7 @@
 #include <value.h>
 
 #include <sciter-x-behavior.h>
+#include <sciter-x-api.h>
 
 namespace SciterUI
 {
@@ -155,6 +156,67 @@ int EventHandler::ResizeHandler(void* tag, SCITER_ELEMENT he, uint32_t evtg, voi
             return resizeSink->OnSizeChanged(he);
         }
         return false;
+    }
+    return false;
+}
+
+int EventHandler::ForwardBehaviorHandler(void* tag, SCITER_ELEMENT he, uint32_t evtg, void* prms)
+{
+    EventHandler* handler = (EventHandler*)tag;
+    if (evtg == SUBSCRIPTIONS_REQUEST && handler != nullptr)
+    {
+        uint32_t* p = (uint32_t*)prms;
+        *p = handler->m_Subscription;
+        return true;
+    }
+    else if (evtg == HANDLE_INITIALIZATION)
+    {
+        return true;
+    }
+    else if (evtg == HANDLE_BEHAVIOR_EVENT)
+    {
+        BEHAVIOR_EVENT_PARAMS * p = (BEHAVIOR_EVENT_PARAMS*)prms;
+        if ((p->cmd & (SINKING | HANDLED)) == 0)
+        {
+            BEHAVIOR_EVENT_PARAMS params = {};
+            params.cmd = p->cmd;
+            params.heTarget = (HELEMENT)handler;
+            params.he = (HELEMENT)handler;
+            params.name = p->name;
+            params.data = p->data;
+            SBOOL handled = false;
+            SCDOM_RESULT r = SciterFireEvent(&params, true, &handled);
+            assert(r == SCDOM_OK); (void)r;
+            return handled != 0;
+        }
+    }
+    return false;
+}
+
+int EventHandler::StateChangeHandler(void* tag, SCITER_ELEMENT he, uint32_t evtg, void* prms)
+{
+    EventHandler* handler = (EventHandler*)tag;
+    if (evtg == SUBSCRIPTIONS_REQUEST && handler != nullptr)
+    {
+        uint32_t* p = (uint32_t*)prms;
+        *p = handler->m_Subscription;
+        return true;
+    }
+    else if (evtg == HANDLE_INITIALIZATION)
+    {
+        return true;
+    }
+    else if (evtg == HANDLE_BEHAVIOR_EVENT)
+    {
+        BEHAVIOR_EVENT_PARAMS* p = (BEHAVIOR_EVENT_PARAMS*)prms;
+        if (p->cmd == VALUE_CHANGED)
+        {
+            IStateChangeSink * stateChangeSink = handler != nullptr ? (IStateChangeSink*)handler->m_Interface : nullptr;
+            if (stateChangeSink)
+            {
+                return stateChangeSink->OnStateChange(he, evtg, prms);
+            }
+        }
     }
     return false;
 }

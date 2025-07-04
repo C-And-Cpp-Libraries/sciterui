@@ -1,6 +1,8 @@
 #include <widgets/combo_box.h>
 #include <map>
 #include <sciter_element.h>
+#include <sciter_handler.h>
+#include "sciter_handler_internal.h"
 #include <vector>
 
 namespace SciterUI
@@ -30,6 +32,7 @@ namespace SciterUI
 
         //IComboBox
         int32_t AddItem(const char* item, const char * value) override;
+        void ClearContents() override;
         SCITER_ELEMENT GetSelectedItem() const override;
         bool SelectItem(int32_t index) override;
 
@@ -70,6 +73,7 @@ namespace SciterUI
 
         m_select.Create("select", "");
         m_comboBoxElem.Insert(m_select, m_comboBoxElem.GetChildCount());
+        m_sciterUI.AttachHandler(m_select, IID_FORWARD_BEHAVIOUR, (void *)((SCITER_ELEMENT)m_select));
     }
 
     void WidgetComboBox::Detached(SCITER_ELEMENT /*Element*/)
@@ -114,6 +118,21 @@ namespace SciterUI
             m_select.Insert(optionElement, m_select.GetChildCount());
         }
         return index;
+    }
+
+    void WidgetComboBox::ClearContents()
+    {
+        SciterElement caption = m_select.FindFirst("caption");
+        if (caption)
+        {
+            caption.SetHTML((const uint8_t *)"&nbsp;", 6, SciterElement::SIH_REPLACE_CONTENT);
+        }
+        SciterElement popup = m_select.FindFirst("popup");
+        if (popup.IsValid())
+        {
+            popup.Clear();
+        }
+        m_items.clear();
     }
 
     SCITER_ELEMENT WidgetComboBox::GetSelectedItem() const

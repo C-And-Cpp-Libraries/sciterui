@@ -40,3 +40,13 @@ SciterValue ConvertToSciterValue(const sciter::value & rv)
     __debugbreak();
     return SciterValue();
 }
+
+sciter::value ConvertFromSciterValue(const SciterValue & rv)
+{
+    if (rv.isInt())
+    {
+        return sciter::value(rv.GetValueInt());
+    }
+    __debugbreak();
+    return sciter::value();
+}

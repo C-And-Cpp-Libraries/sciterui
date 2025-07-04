@@ -62,6 +62,7 @@
     <ClInclude Include="path.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="sciter.h" />
+    <ClInclude Include="sciter_handler_internal.h" />
     <ClInclude Include="sciter_value_internal.h" />
     <ClInclude Include="sciter_window.h" />
     <ClInclude Include="std_string.h" />

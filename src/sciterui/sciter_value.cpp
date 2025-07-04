@@ -28,6 +28,11 @@ SciterValue::SciterValue(std::string Value) :
 {
 }
 
+bool SciterValue::isInt(void) const
+{
+    return m_type == TYPE_INT32_T;
+}
+
 int32_t SciterValue::GetValueInt(void) const
 {
     if (m_type != TYPE_INT32_T)

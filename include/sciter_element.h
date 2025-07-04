@@ -106,6 +106,7 @@ public:
 
     bool IsValid() const;
 
+    void Clear();
     bool Create(const char * tagName, const char * text);
     void Detach() const;
     SciterElement FindFirst(const char * selector, ...) const;
@@ -120,6 +121,7 @@ public:
     SciterElement GetParent() const;
     SciterElement GetRoot() const;
     uint32_t GetState() const;
+    SciterValue GetValue() const;
     void HidePopup() const;
     void Insert(const SCITER_ELEMENT & e, uint32_t Index);
     bool ReleaseCapture(void) const;
@@ -129,6 +131,7 @@ public:
     RECT GetLocation(uint32_t area = ROOT_RELATIVE | CONTENT_BOX) const;
     void SetState(uint32_t bitsToSet, uint32_t bitsToClear, bool update) const;
     void SetStyleAttribute(const char* Name, const wchar_t* Value) const;
+    void SetValue(SciterValue value) const;
     SciterValue Eval(const char * script);
 
 private:

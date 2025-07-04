@@ -1,0 +1,3 @@
+#pragma once
+
+static const char * IID_FORWARD_BEHAVIOUR = "BF3715F2-A1C8-4C7A-9932-455553614750";

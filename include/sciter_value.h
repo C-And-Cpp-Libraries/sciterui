@@ -19,6 +19,7 @@ public:
     SciterValue(std::string Value);
     ~SciterValue();
 
+    bool isInt(void) const;
     int32_t GetValueInt(void) const;
 
 private:

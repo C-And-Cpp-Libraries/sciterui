@@ -1,6 +1,7 @@
 #include "sciter_window.h"
 #include "event_handler.h"
 #include "sciter.h"
+#include "sciter_handler_internal.h"
 #include "std_string.h"
 #include <sciter-x-api.h>
 #include <sciter-x-def.h>
@@ -218,6 +219,16 @@ bool SciterWindow::GetEventProc(const char * riid, LPELEMENT_EVENT_PROC & eventP
     {
         eventProc = &EventHandler::ResizeHandler;
         subscription = HANDLE_SIZE;
+    }
+    else if (strcmp(IID_FORWARD_BEHAVIOUR, riid) == 0)
+    {
+        eventProc = &EventHandler::ForwardBehaviorHandler;
+        subscription = HANDLE_BEHAVIOR_EVENT;
+    }
+    else if (strcmp(IID_ISTATECHANGESINK, riid) == 0)
+    {
+        eventProc = &EventHandler::StateChangeHandler;
+        subscription = HANDLE_BEHAVIOR_EVENT;
     }
     else
     {

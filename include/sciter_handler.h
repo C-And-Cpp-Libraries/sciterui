@@ -147,3 +147,9 @@ __interface IResizeSink
     bool OnSizeChanged(SCITER_ELEMENT elem) = 0;
 };
 static const char * IID_IRESIZESINK = "AE59F6AB-045C-4CCC-A2C6-3CFBD6F288F0";
+
+__interface IStateChangeSink
+{
+    bool OnStateChange(SCITER_ELEMENT elem, uint32_t eventReason, void * data) = 0;
+};
+static const char * IID_ISTATECHANGESINK = "C2534439-8130-400A-A0F9-B4E5B1B1952B";

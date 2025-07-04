@@ -93,6 +93,12 @@ bool SciterElement::IsValid() const
     return m_he != 0;
 }
 
+void SciterElement::Clear()
+{
+    SCDOM_RESULT r = SciterSetElementText((HELEMENT)m_he, 0, 0);
+    assert(r == SCDOM_OK); (void)r;
+}
+
 bool SciterElement::Create(const char * tagName, const char* text)
 {
     SciterElement e;
@@ -220,6 +226,14 @@ uint32_t SciterElement::GetState() const
     return state; /*ELEMENT_STATE_BITS*/
 }
 
+SciterValue SciterElement::GetValue() const
+{
+    SCITER_VALUE rv;
+    SCDOM_RESULT r = SciterGetValue((HELEMENT)m_he, &rv);
+    assert(r == SCDOM_OK); (void)r;
+    return ConvertToSciterValue(rv);
+}
+
 void SciterElement::HidePopup() const
 {
     UINT State = 0;
@@ -287,6 +301,13 @@ void SciterElement::SetStyleAttribute(const char* Name, const wchar_t* Value) co
     SCDOM_RESULT r = SciterSetStyleAttribute((HELEMENT)m_he, Name, Value);
     assert(r == SCDOM_OK);
     (void)r;
+}
+
+void SciterElement::SetValue(SciterValue value) const
+{
+    SCITER_VALUE rv = ConvertFromSciterValue(value);
+    SCDOM_RESULT r = SciterSetValue((HELEMENT)m_he, &rv);
+    assert(r == SCDOM_OK); (void)r;
 }
 
 SciterValue SciterElement::Eval(const char * script)
